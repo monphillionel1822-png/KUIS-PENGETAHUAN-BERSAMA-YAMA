@@ -27,7 +27,7 @@ let score = 0;
 let highscore = localStorage.getItem("highscore") || 0;
 let questionCount = 0;
 let timer;
-let timeLeft = 30;
+let timeLeft = 15;
 
 function showQuestion() {
   if (questionCount >= 10) {
@@ -45,7 +45,7 @@ function showQuestion() {
   }
 
   clearInterval(timer);
-  timeLeft = 30;
+  timeLeft = 15;
   document.getElementById("timer").classList.remove("urgent");
   document.getElementById("timer").innerText = "Waktu tersisa: " + timeLeft + " detik";
   timer = setInterval(countdown, 1000);
@@ -116,4 +116,5 @@ function updateHighscore() {
 
 // tampilkan soal pertama kali
 showQuestion();
+
 

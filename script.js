@@ -8,7 +8,7 @@ const questions = [
   { soal: "Lambang negara Indonesia adalah?", jawaban: "GARUDA" },
   { soal: "Warna bendera negara indonesia adalah?", jawaban: "MERAH PUTIH" },
   { soal: "Alat yang bisa memantau kejadian di rumah atau di kantor dan di tempat umum disebut?", jawaban: "CCTV" },
-  { soal: "Makanan khas indonesia adalah?", jawaban: "NASI" },
+  { soal: "Makanan utama khas indonesia adalah?", jawaban: "NASI" },
   { soal: "Alat yang di gunakan untuk mengambil moment indah adalah?", jawaban: "KAMERA" },
   { soal: "Lawan kata dari pulang adalah ?", jawaban: "PERGI" },
   { soal: "Sebutkan nama hewan yang tidur di siang hari?", jawaban: "KELELAWAR" },
@@ -116,3 +116,4 @@ function updateHighscore() {
 
 // tampilkan soal pertama kali
 showQuestion();
+

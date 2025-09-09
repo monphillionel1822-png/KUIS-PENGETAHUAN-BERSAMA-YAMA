@@ -1,0 +1,49 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f0f0f0;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+}
+
+#question {
+  font-size: 20px;
+  margin: 20px 0;
+}
+
+#timer {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e63946;
+}
+
+input {
+  padding: 8px;
+  font-size: 16px;
+  width: 250px;
+  text-align: center;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background: #0077b6;
+  color: white;
+}
+
+button:hover {
+  background: #023e8a;
+}
+
+#message {
+  font-size: 18px;
+  margin-top: 15px;
+}

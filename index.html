@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Tebak Soal Lengkap Otomatis</title>
+  <style>
+    /* ===== Style Game Tebak Soal ===== */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      padding: 50px 20px;
+      min-height: 100vh;
+    }
+
+    #game-box {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      max-width: 700px;
+      margin: auto;
+      transition: all 0.3s ease;
+    }
+
+    #game-box:hover {
+      transform: scale(1.02);
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #333333;
+      margin-bottom: 25px;
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+      min-height: 60px;
+      color: #444;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 60%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      transition: border 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #e63946;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 25px;
+      margin: 10px 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #457b9d;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1d3557;
+      transform: scale(1.05);
+    }
+
+    #timer {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #e63946;
+      transition: color 0.3s ease;
+    }
+
+    #timer.urgent {
+      color: #d90429; /* merah lebih terang saat timer hampir habis */
+    }
+
+    #message {
+      font-size: 18px;
+      margin-top: 15px;
+      min-height: 30px;
+      color: #333;
+    }
+
+    #score, #highscore {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #1d3557;
+    }
+
+    @media screen and (max-width: 500px) {
+      input[type="text"] {
+        width: 90%;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      #question {
+        font-size: 18px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-box">
+    <h1>⏳ Game Tebak Kuis Bersama Yama ⏳</h1>
+    <p id="question"></p>
+    <input type="text" id="answerInput" placeholder="Ketik jawaban...">
+    <br>
+    <button onclick="submitAnswer()">Jawab</button>
+    <p id="timer">Waktu tersisa: 30 detik</p>
+    <p id="message"></p>
+    <p id="score">Skor: 0</p>
+    <p id="highscore">🏆 Skor Tertinggi: 0</p>
+  </div>
+
+  <script>
+    const questions = [
+      { soal: "Hewan berkaki 4 dan mempunyai belalai, apakah itu?", jawaban: "GAJAH" },
+      { soal: "Buah berwarna kuning dan berbentuk panjang, apakah itu?", jawaban: "PISANG" },
+      { soal: "Ibu kota Indonesia adalah?", jawaban: "JAKARTA" },
+      { soal: "Hewan yang bisa hidup di darat dan air, apakah itu?", jawaban: "KATAK" },
+      { soal: "Planet terdekat dengan Matahari adalah?", jawaban: "MERKURIUS" },
+      { soal: "Lambang negara Indonesia adalah?", jawaban: "GARUDA" },
+      { soal: "Warna bendera negara indonesia adalah?", jawaban: "MERAH PUTIH" },
+      { soal: "Alat yang bisa memantau kejadian di rumah atau di kantor dan di tempat umum disebut?", jawaban: "CCTV" },
+      { soal: "Makanan khas indonesia adalah?", jawaban: "NASI" },
+      { soal: "Alat yang di gunakan untuk mengambil moment indah adalah?", jawaban: "KAMERA" },
+      { soal: "Lawan kata dari pulang adalah ?", jawaban: "PERGI" },
+      { soal: "Sebutkan nama hewan yang tidur di siang hari?", jawaban: "KELELAWAR" },
+      { soal: "Sebutkan manusia yang paling lama jomblo di dunia?", jawaban: "MICHAEL" },
+      { soal: "Siapakah presiden pertama indonesia?", jawaban: "SOEKARNO" },
+      { soal: "Siapakah presiden kita saat ini 2025?", jawaban: "PRABOWO" },
+      { soal: "Siapakah penjahit bendera merah putih indonesia?", jawaban: "FATMAWATI" },
+      { soal: "Dimanakah umat islam umroh?", jawaban: "MAKKAH" },
+      { soal: "Dimanakah umat kristiani beribadah?", jawaban: "GEREJA" },
+      { soal: "Siapakah nama dari anak presiden soekarno yang pernah menjadi presiden indonesia ke 5?", jawaban: "MEGAWATI" }
+    ];
+
+    let currentQuestionIndex;
+    let usedIndexes = [];
+    let score = 0;
+    let highscore = localStorage.getItem("highscore") || 0;
+    let questionCount = 0;
+    let timer;
+    let timeLeft = 30;
+
+    function showQuestion() {
+      if (questionCount >= 10) {
+        document.getElementById("question").innerText = `🎉 Ronde selesai! Skor akhir: ${score}`;
+        document.getElementById("answerInput").style.display = "none";
+        document.getElementById("message").innerText = "Ronde baru akan otomatis mulai dalam 5 detik...";
+        clearInterval(timer);
+        setTimeout(() => {
+          score = 0;
+          questionCount = 0;
+          document.getElementById("answerInput").style.display = "inline";
+          showQuestion();
+        }, 5000);
+        return;
+      }
+
+      clearInterval(timer);
+      timeLeft = 30;
+      document.getElementById("timer").classList.remove("urgent");
+      document.getElementById("timer").innerText = "Waktu tersisa: " + timeLeft + " detik";
+      timer = setInterval(countdown, 1000);
+
+      if (usedIndexes.length === questions.length) usedIndexes = [];
+      do {
+        currentQuestionIndex = Math.floor(Math.random() * questions.length);
+      } while (usedIndexes.includes(currentQuestionIndex));
+      usedIndexes.push(currentQuestionIndex);
+
+      const question = questions[currentQuestionIndex];
+      document.getElementById("question").innerText = question.soal;
+      document.getElementById("answerInput").value = "";
+      document.getElementById("answerInput").style.display = "inline";
+      document.getElementById("message").innerText = "";
+      document.getElementById("score").innerText = "Skor: " + score;
+      document.getElementById("highscore").innerText = "🏆 Skor Tertinggi: " + highscore;
+    }
+
+    function submitAnswer() {
+      clearInterval(timer);
+      const answer = document.getElementById("answerInput").value.trim().toUpperCase();
+      const correctAnswer = questions[currentQuestionIndex].jawaban.toUpperCase();
+      const message = document.getElementById("message");
+
+      if (answer === correctAnswer) {
+        message.innerText = "✅ Benar!";
+        score += 10;
+      } else {
+        message.innerText = `❌ Salah! Jawaban: ${correctAnswer}`;
+        score -= 5;
+      }
+
+      questionCount++;
+      updateHighscore();
+      document.getElementById("score").innerText = "Skor: " + score;
+
+      setTimeout(showQuestion, 2000);
+    }
+
+    function countdown() {
+      timeLeft--;
+      document.getElementById("timer").innerText = "Waktu tersisa: " + timeLeft + " detik";
+      if (timeLeft <= 5) {
+        document.getElementById("timer").classList.add("urgent");
+      } else {
+        document.getElementById("timer").classList.remove("urgent");
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        document.getElementById("message").innerText = `⏰ Waktu habis! Jawaban: ${questions[currentQuestionIndex].jawaban}`;
+        score -= 5;
+        questionCount++;
+        updateHighscore();
+        document.getElementById("score").innerText = "Skor: " + score;
+        setTimeout(showQuestion, 2000);
+      }
+    }
+
+    function updateHighscore() {
+      if (score > highscore) {
+        highscore = score;
+        localStorage.setItem("highscore", highscore);
+      }
+      document.getElementById("highscore").innerText = "🏆 Skor Tertinggi: " + highscore;
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
